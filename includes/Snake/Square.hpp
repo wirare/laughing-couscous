@@ -57,6 +57,7 @@ typedef enum {
     NORMAL = 1,
     SHRINK = 2,
     NEW_SNAKE = 3,
+	RESET = 4
 }   UpdateType;
 
 class Square
@@ -107,7 +108,7 @@ class Square
         void printInfo() const
         {
             std::cout << "Square at pos : " << pos << "\nObject : " << object << "\nSnake_timer : " << snake_timer << std::endl;
-        }
+		}
 
 		Pos getPos() const { return pos; }
 
@@ -116,6 +117,12 @@ class Square
 			if (hasSnake())
 				return SNAKE_BODY_CHR;
 			return object.c;
+		}
+
+		void reset()
+		{
+			snake_timer = -1;
+			object = EMPTY_OBJ;
 		}
 
     private:

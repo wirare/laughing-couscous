@@ -29,7 +29,9 @@ class Dense : public Layer
 		array backward(const array& grad_output, float lr) override
 		{
 			array dW = matmulTN(X_cache, grad_output);
+			dW = clamp(dW, -1.0f, 1.0f);
 			array db = sum(grad_output, 0);
+			db = clamp(db, -1.0f, 1.0f);
 			array dA_prev = matmul(grad_output, W.T());
 
 			float lambda = 1e-4f;

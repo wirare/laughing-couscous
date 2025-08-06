@@ -1,18 +1,18 @@
 #pragma once
 
-#include "Error.hpp"
-#include "Square.hpp"
+#include <Error.hpp>
+#include <Square.hpp>
 #include <stdlib.h>
 #include <iostream>
 #include <random>
 #include <Utility.hpp>
 #include <App.hpp>
+#include <State.hpp>
 
 #define DIE {                           \
     do {                                \
-        std::cout << "Snake died\n";    \
         dead = true;                    \
-        return;                         \
+        return DIED;                    \
     } while (0);                        \
 }
 
@@ -23,6 +23,11 @@ class Snake
     public:
         Snake(Board& board): len(3)
         {
+			init(board);
+        }
+
+		void init(Board& board)
+		{
             Dir dirs[4] = {UP, RIGHT, DOWN, LEFT};
             std::random_device rd;
             std::mt19937 gen(rd());
@@ -45,18 +50,22 @@ class Snake
                 if (tail2.first < 0 || tail2.second < 0 || tail2.first >= (int)board.getSize() || tail2.second >= (int)board.getSize() || tail2 == pos)
                     continue;
 
-                std::cout << "Head pos : " << pos << "\n";
+                //std::cout << "Head pos : " << pos << "\n";
                 board.getSquare(pos).update(3, NEW_SNAKE);
                 board.getSquare(tail1).update(2, NEW_SNAKE);
                 board.getSquare(tail2).update(1, NEW_SNAKE);
-				board.spawnObject(Object(RED_APPLE_OBJ));
-				board.spawnObject(Object(GREEN_APPLE_OBJ));
-				board.spawnObject(Object(GREEN_APPLE_OBJ));
                 break;
             }
-        }
+		}
+
+		void reset()
+		{
+			init(app.board);
+			len = 3;
+			dead = false;
+		}
         
-        void move()
+        Reward move()
         {
             Pos new_pos = pos;
             Dir new_dir = dir;
@@ -94,13 +103,14 @@ class Snake
 			catch(const std::exception& e)
 				DIE;
 
+			Reward reward = NOTHING;
 			Object object = new_square->getObject();
 			UpdateType updateType = NORMAL;
 			if (object == GREEN_APPLE_OBJ)
 			{
 				len++;
 				updateType = GROW;
-
+				reward = EAT_GREEN;
 			}
 			else if (object == RED_APPLE_OBJ)
 			{
@@ -108,6 +118,7 @@ class Snake
 				updateType = SHRINK;
 				if (len == 0)
 					DIE;
+				reward = EAT_RED;
 			}
 			if (updateType != NORMAL)
 			{
@@ -118,6 +129,7 @@ class Snake
 			app.board.update(len, updateType, new_pos);
 			pos = new_pos;
 			dir = new_dir;
+			return reward;
 		}
 
         void printHeadInfo() const
@@ -155,6 +167,8 @@ class Snake
 				std::cout << '\n';
 			}
 		}
+
+		size_t getLen() const { return len; }
 
     private:
         Pos pos;

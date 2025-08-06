@@ -2,7 +2,7 @@
 #include <App.hpp>
 #include <algorithm>
 
-#define CASE_PUSH(c, x) case c: state.push_back(x); break
+#define CASE_PUSH(c, x) case c: state.state.push_back(x); break
 
 const Vision Snake::getSnakeVisionChar()
 {
@@ -23,33 +23,42 @@ const Vision Snake::getSnakeVisionChar()
 
 const State Snake::getSnakeState()
 {
-	State state;
-	Vision vision = getSnakeVisionChar();
+    State state;
+    Vision vision = getSnakeVisionChar();
 
-	for (char c : vision.first)
-	{
-		switch (c)
-		{
-			CASE_PUSH(EMPTY_CHR, 0);
-			CASE_PUSH(SNAKE_HEAD_CHR, 1);
-			CASE_PUSH(WALL_CHR, 3);
-			CASE_PUSH(SNAKE_BODY_CHR, 2);
-			CASE_PUSH(GREEN_APPLE_CHR, -1);
-			CASE_PUSH(RED_APPLE_CHR, -2);
-		}
-	}	
-	for (char c : vision.second)
-	{
-		switch (c)
-		{
-			CASE_PUSH(EMPTY_CHR, 0);
-			CASE_PUSH(WALL_CHR, 3);
-			CASE_PUSH(SNAKE_BODY_CHR, 2);
-			CASE_PUSH(GREEN_APPLE_CHR, -1);
-			CASE_PUSH(RED_APPLE_CHR, -2);
-			case SNAKE_HEAD_CHR: break;
-		}
-	}
+    auto normalize = [](int x) {
+        return float(x) / 3.0f;
+    };
 
-	return state;
+    for (char c : vision.first)
+    {
+        int v = 0;
+        switch (c)
+        {
+            case EMPTY_CHR:       v =  0; break;
+            case SNAKE_HEAD_CHR:  v =  1; break;
+            case WALL_CHR:        v =  3; break;
+            case SNAKE_BODY_CHR:  v =  2; break;
+            case GREEN_APPLE_CHR: v = -1; break;
+            case RED_APPLE_CHR:   v = -2; break;
+        }
+        state.state.push_back(normalize(v));
+    }
+
+    for (char c : vision.second)
+    {
+        int v = 0;
+        switch (c)
+        {
+            case EMPTY_CHR:       v =  0; break;
+            case WALL_CHR:        v =  3; break;
+            case SNAKE_BODY_CHR:  v =  2; break;
+            case GREEN_APPLE_CHR: v = -1; break;
+            case RED_APPLE_CHR:   v = -2; break;
+            case SNAKE_HEAD_CHR:              // skip, already counted
+                continue;
+        }
+        state.state.push_back(normalize(v));
+    }
+    return state;
 }

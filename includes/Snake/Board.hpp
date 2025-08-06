@@ -16,6 +16,9 @@ class Board
             for (size_t i = 0; i < size; i++)
                 for (size_t j = 0; j < size; j++)
                     Squares.push_back(Square(i, j));
+			spawnObject(Object(RED_APPLE_OBJ));
+			spawnObject(Object(GREEN_APPLE_OBJ));
+			spawnObject(Object(GREEN_APPLE_OBJ));
         }
 
         ~Board() = default;
@@ -131,6 +134,15 @@ class Board
 				charRep.push_back(WALL_CHR);
 
 			return charRep;
+		}
+
+		void reset()
+		{
+			for (Square& s : Squares)
+				s.reset();
+			spawnObject(Object(RED_APPLE_OBJ));
+			spawnObject(Object(GREEN_APPLE_OBJ));
+			spawnObject(Object(GREEN_APPLE_OBJ));
 		}
 
     private:

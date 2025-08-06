@@ -32,7 +32,7 @@ class Sequential
 		}
 
 		array backward(const array& grad_output, float lr)
-	{
+		{
 			array grad = grad_output;
 			for (auto it = layers.rbegin(); it != layers.rend(); it++)
 				grad = (*it)->backward(grad, lr);

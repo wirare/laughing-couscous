@@ -8,20 +8,18 @@ class Snake;
 
 struct App
 {
-    App();
-    App(Snake& snake, Board& board): snake(snake), board(board) {}
+    App(Snake& snake, Board& board): snake(snake), board(board){};
+
+	void reset_environment();
 
     Snake& snake;
     Board& board;
     bool inputs[512] = { false };
 
-    void pollInput() {
+    void pollInput()
+	{
         for (int key = 0; key < 512; key++)
-        {
             inputs[key] = IsKeyDown((KeyboardKey)key);
-            //if (inputs[key])
-            //    std::cout << "Key : " << key << " is pressed.\n";
-        }
     }
 };
 
